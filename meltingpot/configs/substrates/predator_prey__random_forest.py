@@ -54,8 +54,7 @@ L+XAXXXXXXXAXXXXXXXAX=J
 """
 
 prey_spawn_point = {"type": "all", "list": ["tiled_floor", "spawn_point_prey"]}
-predator_spawn_point = {"type": "all", "list": ["tiled_floor",
-                                                "spawn_point_predator"]}
+predator_spawn_point = {"type": "all", "list": ["tiled_floor", "spawn_point_predator"]}
 acorn = {"type": "all", "list": ["tiled_floor", "floor_acorn"]}
 
 # `prefab` determines which prefab game object to use for each `char` in the
@@ -96,23 +95,25 @@ CHAR_PREFAB_MAP = {
 
 
 def get_config():
-  """Default configuration."""
-  config = base_config.get_config()
+    """Default configuration."""
+    config = base_config.get_config()
 
-  # Override the map layout settings.
-  config.layout = config_dict.ConfigDict()
-  config.layout.ascii_map = ASCII_MAP
-  config.layout.char_prefab_map = CHAR_PREFAB_MAP
+    # Override the map layout settings.
+    config.layout = config_dict.ConfigDict()
+    config.layout.ascii_map = ASCII_MAP
+    config.layout.char_prefab_map = CHAR_PREFAB_MAP
 
-  # The specs of the environment (from a single-agent perspective).
-  config.timestep_spec = specs.timestep({
-      "RGB": specs.OBSERVATION["RGB"],
-      "STAMINA": specs.float64(),
-      # Debug only (do not use the following observations in policies).
-      "WORLD.RGB": specs.rgb(152, 184),
-  })
+    # The specs of the environment (from a single-agent perspective).
+    config.timestep_spec = specs.timestep(
+        {
+            "RGB": specs.OBSERVATION["RGB"],
+            "STAMINA": specs.float64(),
+            # Debug only (do not use the following observations in policies).
+            "WORLD.RGB": specs.rgb(152, 184),
+        }
+    )
 
-  # The roles assigned to each player.
-  config.default_player_roles = ("predator",) * 5 + ("prey",) * 8
+    # The roles assigned to each player.
+    config.default_player_roles = ("predator",) * 5 + ("prey",) * 8
 
-  return config
+    return config

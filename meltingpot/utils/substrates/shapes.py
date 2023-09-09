@@ -34,120 +34,126 @@ LIGHT_STONE = (204, 204, 204, 255)
 
 
 def rgb_to_rgba(rgb: ColorRGB, alpha: int = 255) -> ColorRGBA:
-  return (rgb[0], rgb[1], rgb[2], alpha)
+    return (rgb[0], rgb[1], rgb[2], alpha)
 
 
-def scale_color(color_tuple: ColorRGBA, factor: float,
-                alpha: Optional[int] = None) -> ColorRGBA:
-  """Scale an RGBA color tuple by a given factor.
+def scale_color(
+    color_tuple: ColorRGBA, factor: float, alpha: Optional[int] = None
+) -> ColorRGBA:
+    """Scale an RGBA color tuple by a given factor.
 
-  This function scales, multiplicatively, the RGB values of a color tuple by the
-  given amount, clamped to a maximum of 255. The alpha channel is either
-  overwritten by the specified one, or if none is specified, it is inherited by
-  the original color.
+    This function scales, multiplicatively, the RGB values of a color tuple by the
+    given amount, clamped to a maximum of 255. The alpha channel is either
+    overwritten by the specified one, or if none is specified, it is inherited by
+    the original color.
 
-  Args:
-    color_tuple: The original color to scale.
-    factor: The factor to multiplicatively scale the RGB channels by.
-    alpha: If provided, the new color will have this alpha, otherwise, inherit
-      from original color_tuple.
+    Args:
+      color_tuple: The original color to scale.
+      factor: The factor to multiplicatively scale the RGB channels by.
+      alpha: If provided, the new color will have this alpha, otherwise, inherit
+        from original color_tuple.
 
-  Returns:
-    A new color tuple, with its RGB channels scaled.
-  """
-  if len(color_tuple) == 3:
-    color_tuple = rgb_to_rgba(color_tuple)  # pytype: disable=wrong-arg-types
-  scaled = [int(min(x * factor, 255)) for x in color_tuple]
-  scaled[3] = alpha if alpha is not None else color_tuple[-1]
-  return tuple(scaled)
+    Returns:
+      A new color tuple, with its RGB channels scaled.
+    """
+    if len(color_tuple) == 3:
+        color_tuple = rgb_to_rgba(color_tuple)  # pytype: disable=wrong-arg-types
+    scaled = [int(min(x * factor, 255)) for x in color_tuple]
+    scaled[3] = alpha if alpha is not None else color_tuple[-1]
+    return tuple(scaled)
 
 
 # LINT.IfChange
 def get_palette(color: Color) -> Dict[str, ColorRGBA]:
-  """Convert provided color to a palette suitable for the player text shape.
+    """Convert provided color to a palette suitable for the player text shape.
 
-  The overall palette is:
+    The overall palette is:
 
-  'x' Transparent
-  ',' Black
-  'O' Dark gray
-  'o' 45% darker color than the base palette color
-  '&' 25% darker color than the base palette color
-  '*' The base color of the palette
-  '@' 25% lighter color than the base palette color
-  '#' White
-  'r' A rotation of the main color: RGB -> RBG
-  'R' A 25% lighter color than the rotation of the main color: RGB -> RBG
+    'x' Transparent
+    ',' Black
+    'O' Dark gray
+    'o' 45% darker color than the base palette color
+    '&' 25% darker color than the base palette color
+    '*' The base color of the palette
+    '@' 25% lighter color than the base palette color
+    '#' White
+    'r' A rotation of the main color: RGB -> RBG
+    'R' A 25% lighter color than the rotation of the main color: RGB -> RBG
 
-  Args:
-    color (tuple of length 4): Red, Green, Blue, Alpha (transparency).
+    Args:
+      color (tuple of length 4): Red, Green, Blue, Alpha (transparency).
 
-  Returns:
-    palette (dict): maps palette symbols to suitable colors.
-  """
-  palette = {
-      "*": (color[0], color[1], color[2], 255),
-      "&": scale_color(color, 0.75, 255),
-      "o": scale_color(color, 0.55, 255),
-      "!": scale_color(color, 0.65, 255),
-      "~": scale_color(color, 0.9, 255),
-      "@": scale_color(color, 1.25, 255),
-      "r": (color[0], color[2], color[1], 255),
-      "R": scale_color((color[0], color[2], color[1], 255),
-                       1.25, 255),
-      "%": (178, 206, 234, 255),
-      "#": WHITE,
-      "O": DARK_GRAY,
-      ",": BLACK,
-      "x": ALPHA,
-  }
-  return palette
+    Returns:
+      palette (dict): maps palette symbols to suitable colors.
+    """
+    palette = {
+        "*": (color[0], color[1], color[2], 255),
+        "&": scale_color(color, 0.75, 255),
+        "o": scale_color(color, 0.55, 255),
+        "!": scale_color(color, 0.65, 255),
+        "~": scale_color(color, 0.9, 255),
+        "@": scale_color(color, 1.25, 255),
+        "r": (color[0], color[2], color[1], 255),
+        "R": scale_color((color[0], color[2], color[1], 255), 1.25, 255),
+        "%": (178, 206, 234, 255),
+        "#": WHITE,
+        "O": DARK_GRAY,
+        ",": BLACK,
+        "x": ALPHA,
+    }
+    return palette
+
+
 # LINT.ThenChange(//meltingpot/lua/modules/colors.lua)
 
 
 def flip_horizontal(sprite: str) -> str:
-  flipped = ""
-  for line in sprite.split("\n"):
-    flipped += line[::-1] + "\n"
-  return flipped[:-1]
+    flipped = ""
+    for line in sprite.split("\n"):
+        flipped += line[::-1] + "\n"
+    return flipped[:-1]
 
 
 def flip_vertical(sprite: str) -> str:
-  flipped = ""
-  for line in sprite[1:].split("\n"):
-    flipped = line + "\n" + flipped
-  return flipped
+    flipped = ""
+    for line in sprite[1:].split("\n"):
+        flipped = line + "\n" + flipped
+    return flipped
 
 
 def convert_rgb_to_rgba(rgb_tuple: ColorRGB) -> ColorRGBA:
-  rgba_tuple = (rgb_tuple[0], rgb_tuple[1], rgb_tuple[2], 255)
-  return rgba_tuple
+    rgba_tuple = (rgb_tuple[0], rgb_tuple[1], rgb_tuple[2], 255)
+    return rgba_tuple
 
 
 def adjust_color_brightness(
-    color_tuple: Union[ColorRGB, ColorRGBA],
-    factor: float) -> ColorRGBA:
-  """Adjust color brightness by first converting to hsv and then back to rgb."""
-  hsv = colorsys.rgb_to_hsv(color_tuple[0], color_tuple[1], color_tuple[2])
-  adjusted_hsv = (hsv[0], hsv[1], hsv[2] * factor)
-  adjusted_rgb = colorsys.hsv_to_rgb(*adjusted_hsv)
-  if len(color_tuple) == 3:
-    output_color = (adjusted_rgb[0], adjusted_rgb[1], adjusted_rgb[2], 255)
-  elif len(color_tuple) == 4:
-    output_color = (
-        adjusted_rgb[0], adjusted_rgb[1], adjusted_rgb[2], color_tuple[3])
-  return tuple([int(x) for x in output_color])
+    color_tuple: Union[ColorRGB, ColorRGBA], factor: float
+) -> ColorRGBA:
+    """Adjust color brightness by first converting to hsv and then back to rgb."""
+    hsv = colorsys.rgb_to_hsv(color_tuple[0], color_tuple[1], color_tuple[2])
+    adjusted_hsv = (hsv[0], hsv[1], hsv[2] * factor)
+    adjusted_rgb = colorsys.hsv_to_rgb(*adjusted_hsv)
+    if len(color_tuple) == 3:
+        output_color = (adjusted_rgb[0], adjusted_rgb[1], adjusted_rgb[2], 255)
+    elif len(color_tuple) == 4:
+        output_color = (
+            adjusted_rgb[0],
+            adjusted_rgb[1],
+            adjusted_rgb[2],
+            color_tuple[3],
+        )
+    return tuple([int(x) for x in output_color])
 
 
-def get_diamond_palette(
-    base_color: ColorRGB) -> Dict[str, ColorRGBA]:
-  return {
-      "x": ALPHA,
-      "a": (252, 252, 252, 255),
-      "b": convert_rgb_to_rgba(base_color),
-      "c": adjust_color_brightness(base_color, 0.25),
-      "d": convert_rgb_to_rgba(base_color)
-  }
+def get_diamond_palette(base_color: ColorRGB) -> Dict[str, ColorRGBA]:
+    return {
+        "x": ALPHA,
+        "a": (252, 252, 252, 255),
+        "b": convert_rgb_to_rgba(base_color),
+        "c": adjust_color_brightness(base_color, 0.25),
+        "d": convert_rgb_to_rgba(base_color),
+    }
+
 
 HD_AVATAR_N = """
 xxxxxxxxxxxxxxxx
@@ -303,8 +309,12 @@ xxxxxxx&xoxxxxxx
 xxxxx@*@**xxxxxx
 """
 
-HD_AVATAR_W_BADGE = [HD_AVATAR_N_W_BADGE, HD_AVATAR_E_W_BADGE,
-                     HD_AVATAR_S_W_BADGE, HD_AVATAR_W_W_BADGE]
+HD_AVATAR_W_BADGE = [
+    HD_AVATAR_N_W_BADGE,
+    HD_AVATAR_E_W_BADGE,
+    HD_AVATAR_S_W_BADGE,
+    HD_AVATAR_W_W_BADGE,
+]
 
 CUTE_AVATAR_N = """
 xxxxxxxx
@@ -474,8 +484,12 @@ xxabcdxx
 xx&x&&xx
 """
 
-CUTE_AVATAR_W_SHORTS = [CUTE_AVATAR_W_SHORTS_N, CUTE_AVATAR_W_SHORTS_E,
-                        CUTE_AVATAR_W_SHORTS_S, CUTE_AVATAR_W_SHORTS_W]
+CUTE_AVATAR_W_SHORTS = [
+    CUTE_AVATAR_W_SHORTS_N,
+    CUTE_AVATAR_W_SHORTS_E,
+    CUTE_AVATAR_W_SHORTS_S,
+    CUTE_AVATAR_W_SHORTS_W,
+]
 
 PERSISTENCE_PREDATOR_N = """
 xxexxexx
@@ -521,8 +535,12 @@ auuuuuax
 xexxxexx
 """
 
-PERSISTENCE_PREDATOR = [PERSISTENCE_PREDATOR_N, PERSISTENCE_PREDATOR_E,
-                        PERSISTENCE_PREDATOR_S, PERSISTENCE_PREDATOR_W]
+PERSISTENCE_PREDATOR = [
+    PERSISTENCE_PREDATOR_N,
+    PERSISTENCE_PREDATOR_E,
+    PERSISTENCE_PREDATOR_S,
+    PERSISTENCE_PREDATOR_W,
+]
 
 AVATAR_DEFAULT = """
 xxxx@@@@@@@@xxxx
@@ -1587,8 +1605,7 @@ x~~xx~~x
 """
 
 SPACER = [SPACER_N, SPACER_E, SPACER_S, SPACER_W]
-SPACER_TAGGED = [SPACER_TAGGED_S, SPACER_TAGGED_S, SPACER_TAGGED_S,
-                 SPACER_TAGGED_S]
+SPACER_TAGGED = [SPACER_TAGGED_S, SPACER_TAGGED_S, SPACER_TAGGED_S, SPACER_TAGGED_S]
 
 NW_SHIP_WALL = """
 oooooooo
@@ -2280,11 +2297,12 @@ xx****xx
 xx&x&&xx
 """
 
-CUTE_AVATAR_HOLDING_PAINTBRUSH = [CUTE_AVATAR_HOLDING_PAINTBRUSH_N,
-                                  CUTE_AVATAR_HOLDING_PAINTBRUSH_E,
-                                  CUTE_AVATAR_HOLDING_PAINTBRUSH_S,
-                                  CUTE_AVATAR_HOLDING_PAINTBRUSH_W
-                                  ]
+CUTE_AVATAR_HOLDING_PAINTBRUSH = [
+    CUTE_AVATAR_HOLDING_PAINTBRUSH_N,
+    CUTE_AVATAR_HOLDING_PAINTBRUSH_E,
+    CUTE_AVATAR_HOLDING_PAINTBRUSH_S,
+    CUTE_AVATAR_HOLDING_PAINTBRUSH_W,
+]
 
 PAINTBRUSH_N = """
 xxxxxxxx
@@ -2634,8 +2652,12 @@ xxxxxxxx
 MAGIC_BEAM_S_FACING = flip_vertical(MAGIC_BEAM_N_FACING)
 MAGIC_BEAM_W_FACING = flip_horizontal(MAGIC_BEAM_E_FACING)
 
-MAGIC_BEAM = [MAGIC_BEAM_N_FACING, MAGIC_BEAM_E_FACING,
-              MAGIC_BEAM_S_FACING, MAGIC_BEAM_W_FACING]
+MAGIC_BEAM = [
+    MAGIC_BEAM_N_FACING,
+    MAGIC_BEAM_E_FACING,
+    MAGIC_BEAM_S_FACING,
+    MAGIC_BEAM_W_FACING,
+]
 
 MAGIC_HANDS_N_FACING = """
 xx~xx~xx
@@ -3016,8 +3038,12 @@ x&*****x
 xx&&&&xx
 """
 
-CYTOAVATAR_EMPTY = [CYTOAVATAR_EMPTY_N, CYTOAVATAR_EMPTY_E,
-                    CYTOAVATAR_EMPTY_S, CYTOAVATAR_EMPTY_W]
+CYTOAVATAR_EMPTY = [
+    CYTOAVATAR_EMPTY_N,
+    CYTOAVATAR_EMPTY_E,
+    CYTOAVATAR_EMPTY_S,
+    CYTOAVATAR_EMPTY_W,
+]
 
 CYTOAVATAR_HOLDING_ONE_N = """
 xxxxxxxx
@@ -3063,8 +3089,12 @@ x****xxx
 x&&&&&xx
 """
 
-CYTOAVATAR_HOLDING_ONE = [CYTOAVATAR_HOLDING_ONE_N, CYTOAVATAR_HOLDING_ONE_E,
-                          CYTOAVATAR_HOLDING_ONE_S, CYTOAVATAR_HOLDING_ONE_W]
+CYTOAVATAR_HOLDING_ONE = [
+    CYTOAVATAR_HOLDING_ONE_N,
+    CYTOAVATAR_HOLDING_ONE_E,
+    CYTOAVATAR_HOLDING_ONE_S,
+    CYTOAVATAR_HOLDING_ONE_W,
+]
 
 CYTOAVATAR_HOLDING_MULTI_N = """
 xx&***xx
@@ -3110,10 +3140,12 @@ x&*****x
 x&&&&&&x
 """
 
-CYTOAVATAR_HOLDING_MULTI = [CYTOAVATAR_HOLDING_MULTI_N,
-                            CYTOAVATAR_HOLDING_MULTI_E,
-                            CYTOAVATAR_HOLDING_MULTI_S,
-                            CYTOAVATAR_HOLDING_MULTI_W]
+CYTOAVATAR_HOLDING_MULTI = [
+    CYTOAVATAR_HOLDING_MULTI_N,
+    CYTOAVATAR_HOLDING_MULTI_E,
+    CYTOAVATAR_HOLDING_MULTI_S,
+    CYTOAVATAR_HOLDING_MULTI_W,
+]
 
 SINGLE_HOLDING_LIQUID = """
 xxxxxxxx
@@ -3889,8 +3921,12 @@ x****xxx
 x&x&&xxx
 """
 
-CUTE_AVATAR_RANK_FIRST = [CUTE_AVATAR_RANK_FIRST_N, CUTE_AVATAR_RANK_FIRST_E,
-                          CUTE_AVATAR_RANK_FIRST_S, CUTE_AVATAR_RANK_FIRST_W]
+CUTE_AVATAR_RANK_FIRST = [
+    CUTE_AVATAR_RANK_FIRST_N,
+    CUTE_AVATAR_RANK_FIRST_E,
+    CUTE_AVATAR_RANK_FIRST_S,
+    CUTE_AVATAR_RANK_FIRST_W,
+]
 
 CUTE_AVATAR_RANK_SECOND_N = """
 xxxxxx,,
@@ -3936,8 +3972,12 @@ x****xxx
 x&x&&xxx
 """
 
-CUTE_AVATAR_RANK_SECOND = [CUTE_AVATAR_RANK_SECOND_N, CUTE_AVATAR_RANK_SECOND_E,
-                           CUTE_AVATAR_RANK_SECOND_S, CUTE_AVATAR_RANK_SECOND_W]
+CUTE_AVATAR_RANK_SECOND = [
+    CUTE_AVATAR_RANK_SECOND_N,
+    CUTE_AVATAR_RANK_SECOND_E,
+    CUTE_AVATAR_RANK_SECOND_S,
+    CUTE_AVATAR_RANK_SECOND_W,
+]
 
 CUTE_AVATAR_RANK_RUNNER_UP_N = """
 xxxxxx,,
@@ -3984,8 +4024,10 @@ x&x&&xxx
 """
 
 CUTE_AVATAR_RANK_RUNNER_UP = [
-    CUTE_AVATAR_RANK_RUNNER_UP_N, CUTE_AVATAR_RANK_RUNNER_UP_E,
-    CUTE_AVATAR_RANK_RUNNER_UP_S, CUTE_AVATAR_RANK_RUNNER_UP_W
+    CUTE_AVATAR_RANK_RUNNER_UP_N,
+    CUTE_AVATAR_RANK_RUNNER_UP_E,
+    CUTE_AVATAR_RANK_RUNNER_UP_S,
+    CUTE_AVATAR_RANK_RUNNER_UP_W,
 ]
 
 CUTE_AVATAR_ARMS_UP_N = """
@@ -4032,8 +4074,12 @@ xx****xx
 xx&x&&xx
 """
 
-CUTE_AVATAR_ARMS_UP = [CUTE_AVATAR_ARMS_UP_N, CUTE_AVATAR_ARMS_UP_E,
-                       CUTE_AVATAR_ARMS_UP_S, CUTE_AVATAR_ARMS_UP_W]
+CUTE_AVATAR_ARMS_UP = [
+    CUTE_AVATAR_ARMS_UP_N,
+    CUTE_AVATAR_ARMS_UP_E,
+    CUTE_AVATAR_ARMS_UP_S,
+    CUTE_AVATAR_ARMS_UP_W,
+]
 
 COIN_MAGICALLY_HELD = """
 xxxx,,,,,,,,xxxx
@@ -4678,8 +4724,12 @@ x****xxx
 x&x&&xxx
 """
 
-CUTE_AVATAR_W_BUBBLE = [CUTE_AVATAR_W_BUBBLE_N, CUTE_AVATAR_W_BUBBLE_E,
-                        CUTE_AVATAR_W_BUBBLE_S, CUTE_AVATAR_W_BUBBLE_W]
+CUTE_AVATAR_W_BUBBLE = [
+    CUTE_AVATAR_W_BUBBLE_N,
+    CUTE_AVATAR_W_BUBBLE_E,
+    CUTE_AVATAR_W_BUBBLE_S,
+    CUTE_AVATAR_W_BUBBLE_W,
+]
 
 CUTE_AVATAR_FROZEN = """
   ########
@@ -4889,8 +4939,10 @@ xxxxxxxx
 """
 
 CUTE_AVATAR_CHILD = [
-    CUTE_AVATAR_CHILD_N, CUTE_AVATAR_CHILD_E, CUTE_AVATAR_CHILD_S,
-    CUTE_AVATAR_CHILD_W
+    CUTE_AVATAR_CHILD_N,
+    CUTE_AVATAR_CHILD_E,
+    CUTE_AVATAR_CHILD_S,
+    CUTE_AVATAR_CHILD_W,
 ]
 
 GEM_PALETTE = {
@@ -4898,7 +4950,7 @@ GEM_PALETTE = {
     "r": (106, 241, 225, 255),
     "t": (61, 206, 189, 255),
     "d": (78, 218, 202, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 GRATE_PALETTE = {
@@ -4908,49 +4960,46 @@ GRATE_PALETTE = {
     "~": (31, 31, 31, 255),
     "X": (104, 91, 91, 255),
     "o": (109, 98, 98, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 GRASS_PALETTE = {
     "*": (124, 153, 115, 255),
     "@": (136, 168, 126, 255),
-    "x": (204, 199, 192, 255)
+    "x": (204, 199, 192, 255),
 }
 
 GLASS_PALETTE = {
     "@": (218, 243, 245, 150),
     "*": (186, 241, 245, 150),
     "!": (134, 211, 217, 150),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
-WOOD_FLOOR_PALETTE = {
-    "-": (130, 100, 70, 255),
-    "x": (148, 109, 77, 255)
-}
+WOOD_FLOOR_PALETTE = {"-": (130, 100, 70, 255), "x": (148, 109, 77, 255)}
 
 METAL_FLOOR_PALETTE = {
     "o": (90, 92, 102, 255),
     "O": (117, 120, 133, 255),
-    "x": (99, 101, 112, 255)
+    "x": (99, 101, 112, 255),
 }
 
 METAL_PANEL_FLOOR_PALETTE = {
     "-": (142, 149, 163, 255),
     "#": (144, 152, 166, 255),
-    "/": (151, 159, 173, 255)
+    "/": (151, 159, 173, 255),
 }
 
 SHIP_PALETTE = {
     "o": (90, 105, 136, 255),
     "#": (58, 68, 102, 255),
-    "x": (38, 43, 68, 255)
+    "x": (38, 43, 68, 255),
 }
 
 TILE_FLOOR_PALETTE = {
     "t": (235, 228, 216, 255),
     "x": (222, 215, 202, 255),
-    "o": (214, 207, 195, 255)
+    "o": (214, 207, 195, 255),
 }
 
 ROCK_PALETTE = {
@@ -4975,7 +5024,7 @@ MOULD_PALETTE = {
     "*": (132, 222, 0, 255),
     "&": (119, 194, 0, 255),
     "+": (153, 219, 0, 80),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 SCISSORS_PALETTE = {
@@ -5007,7 +5056,7 @@ GRAY_PALETTE = {
     "&": (130, 130, 130, 255),
     "@": (200, 200, 200, 255),
     "#": (230, 230, 230, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 WALL_PALETTE = {
@@ -5015,7 +5064,7 @@ WALL_PALETTE = {
     "&": (100, 100, 100, 255),
     "@": (109, 109, 109, 255),
     "#": (152, 152, 152, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 BRICK_WALL_PALETTE = {
@@ -5023,7 +5072,7 @@ BRICK_WALL_PALETTE = {
     "c": (110, 108, 92, 255),
     "o": (78, 78, 78, 255),
     "i": (138, 135, 116, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 COIN_PALETTE = {
@@ -5031,7 +5080,7 @@ COIN_PALETTE = {
     "@": (220, 220, 60, 255),
     "&": (180, 180, 40, 255),
     "#": (255, 255, 240, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 RED_COIN_PALETTE = {
@@ -5039,7 +5088,7 @@ RED_COIN_PALETTE = {
     "@": (220, 60, 60, 255),
     "&": (180, 40, 40, 255),
     "#": (255, 240, 240, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 GREEN_COIN_PALETTE = {
@@ -5047,51 +5096,28 @@ GREEN_COIN_PALETTE = {
     "@": (60, 220, 60, 255),
     "&": (40, 180, 40, 255),
     "#": (240, 255, 240, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 TILED_FLOOR_GREY_PALETTE = {
     "o": (204, 199, 192, 255),
     "-": (194, 189, 182, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
-INVISIBLE_PALETTE = {
-    "*": ALPHA,
-    "@": ALPHA,
-    "&": ALPHA,
-    "#": ALPHA,
-    "x": ALPHA
-}
+INVISIBLE_PALETTE = {"*": ALPHA, "@": ALPHA, "&": ALPHA, "#": ALPHA, "x": ALPHA}
 
 
-TREE_PALETTE = {
-    "*": TREE_BROWN,
-    "@": LEAF_GREEN,
-    "x": ALPHA
-}
+TREE_PALETTE = {"*": TREE_BROWN, "@": LEAF_GREEN, "x": ALPHA}
 
 
-POTATO_PATCH_PALETTE = {
-    "*": VEGETAL_GREEN,
-    "@": LEAF_GREEN,
-    "x": ALPHA
-}
+POTATO_PATCH_PALETTE = {"*": VEGETAL_GREEN, "@": LEAF_GREEN, "x": ALPHA}
 
 
-FIRE_PALETTE = {
-    "@": TREE_BROWN,
-    "*": DARK_FLAME,
-    "&": LIGHT_FLAME,
-    "x": ALPHA
-}
+FIRE_PALETTE = {"@": TREE_BROWN, "*": DARK_FLAME, "&": LIGHT_FLAME, "x": ALPHA}
 
 
-STONE_QUARRY_PALETTE = {
-    "@": DARK_STONE,
-    "#": LIGHT_STONE,
-    "x": ALPHA
-}
+STONE_QUARRY_PALETTE = {"@": DARK_STONE, "#": LIGHT_STONE, "x": ALPHA}
 
 PRED1_PALETTE = {
     "e": (80, 83, 115, 255),
@@ -5101,7 +5127,7 @@ PRED1_PALETTE = {
     "u": (113, 117, 153, 255),
     "a": (108, 111, 145, 255),
     "y": (255, 227, 71, 255),
-    "x": ALPHA
+    "x": ALPHA,
 }
 
 CROWN_PALETTE = {
@@ -5226,7 +5252,7 @@ STARS_PALETTE = {
 GOLD_CROWN_PALETTE = {
     "#": (244, 180, 27, 255),
     "@": (186, 136, 20, 150),
-    "x": (0, 0, 0, 0)
+    "x": (0, 0, 0, 0),
 }
 
 SILVER_CROWN_PALETTE = {
@@ -5235,18 +5261,14 @@ SILVER_CROWN_PALETTE = {
     "x": (0, 0, 0, 0),
 }
 
-BRONZE_CAP_PALETTE = {
-    "#": (102, 76, 0, 255),
-    "@": (87, 65, 0, 255),
-    "x": (0, 0, 0, 0)
-}
+BRONZE_CAP_PALETTE = {"#": (102, 76, 0, 255), "@": (87, 65, 0, 255), "x": (0, 0, 0, 0)}
 
 YELLOW_FLAG_PALETTE = {
     "*": (255, 216, 0, 255),
     "@": (230, 195, 0, 255),
     "&": (204, 173, 0, 255),
     "|": (102, 51, 61, 255),
-    "x": (0, 0, 0, 0)
+    "x": (0, 0, 0, 0),
 }
 
 RED_FLAG_PALETTE = {
@@ -5254,7 +5276,7 @@ RED_FLAG_PALETTE = {
     "@": (181, 46, 25, 255),
     "&": (156, 40, 22, 255),
     "|": (102, 51, 61, 255),
-    "x": (0, 0, 0, 0)
+    "x": (0, 0, 0, 0),
 }
 
 GREEN_FLAG_PALETTE = {
@@ -5262,19 +5284,15 @@ GREEN_FLAG_PALETTE = {
     "@": (20, 166, 54, 255),
     "&": (17, 140, 46, 255),
     "|": (102, 51, 61, 255),
-    "x": (0, 0, 0, 0)
+    "x": (0, 0, 0, 0),
 }
 
-HIGHLIGHT_PALETTE = {
-    "*": (255, 255, 255, 35),
-    "o": (0, 0, 0, 35),
-    "x": (0, 0, 0, 0)
-}
+HIGHLIGHT_PALETTE = {"*": (255, 255, 255, 35), "o": (0, 0, 0, 35), "x": (0, 0, 0, 0)}
 
 BRUSH_PALETTE = {
     "-": (143, 96, 74, 255),
     "+": (117, 79, 61, 255),
-    "k": (199, 176, 135, 255)
+    "k": (199, 176, 135, 255),
 }
 
 MAGIC_BEAM_PALETTE = {
@@ -5433,7 +5451,7 @@ CONVERTER_PALETTE = {
 FACTORY_FLOOR_PALETTE = {
     "-": (204, 204, 188, 255),
     "x": (194, 194, 178, 255),
-    "o": (212, 212, 195, 255)
+    "o": (212, 212, 195, 255),
 }
 
 CONVEYOR_BELT_PALETTE_MONOCHROME = {
@@ -5442,7 +5460,7 @@ CONVEYOR_BELT_PALETTE_MONOCHROME = {
     "s": (150, 139, 138, 255),
     "M": (135, 124, 123, 255),
     "Y": (194, 160, 81, 255),
-    "B": (73, 66, 75, 255)
+    "B": (73, 66, 75, 255),
 }
 
 CONVEYOR_BELT_GREEN_ANCHOR_PALETTE = {
@@ -5450,14 +5468,14 @@ CONVEYOR_BELT_GREEN_ANCHOR_PALETTE = {
     ",": (113, 120, 89, 255),
     "G": (148, 156, 126, 255),
     "g": (129, 138, 103, 255),
-    "x": (0, 0, 0, 0)
+    "x": (0, 0, 0, 0),
 }
 
 BLUE_OBJECT_PALETTE = {
     "@": (51, 170, 189, 255),
     "*": (56, 186, 207, 255),
     "#": (45, 152, 168, 255),
-    "x": (0, 0, 0, 0)
+    "x": (0, 0, 0, 0),
 }
 
 APPLE_RED_PALETTE = {

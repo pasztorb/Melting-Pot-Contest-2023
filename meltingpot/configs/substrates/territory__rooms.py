@@ -63,8 +63,13 @@ TRRRRRFTRRRRRFTRRRRRF
 
 # `prefab` determines which prefab game object to use for each `char` in the
 # ascii map.
-resource_associated_prefabs = ["floor", "resource_texture", "resource",
-                               "reward_indicator", "damage_indicator"]
+resource_associated_prefabs = [
+    "floor",
+    "resource_texture",
+    "resource",
+    "reward_indicator",
+    "damage_indicator",
+]
 resource = {"type": "all", "list": resource_associated_prefabs}
 spawn_point_associated_prefabs = ["floor", "spawn_point"]
 spawn_point = {"type": "all", "list": spawn_point_associated_prefabs}
@@ -81,24 +86,26 @@ CHAR_PREFAB_MAP = {
 
 
 def get_config():
-  """Default configuration."""
-  config = base_config.get_config()
+    """Default configuration."""
+    config = base_config.get_config()
 
-  # Override the map layout settings.
-  config.layout = config_dict.ConfigDict()
-  config.layout.ascii_map = ASCII_MAP
-  config.layout.char_prefab_map = CHAR_PREFAB_MAP
-  config.layout.topology = "TORUS"
+    # Override the map layout settings.
+    config.layout = config_dict.ConfigDict()
+    config.layout.ascii_map = ASCII_MAP
+    config.layout.char_prefab_map = CHAR_PREFAB_MAP
+    config.layout.topology = "TORUS"
 
-  # The specs of the environment (from a single-agent perspective).
-  config.timestep_spec = specs.timestep({
-      "RGB": specs.OBSERVATION["RGB"],
-      "READY_TO_SHOOT": specs.OBSERVATION["READY_TO_SHOOT"],
-      # Debug only (do not use the following observations in policies).
-      "WORLD.RGB": specs.rgb(168, 168),
-  })
+    # The specs of the environment (from a single-agent perspective).
+    config.timestep_spec = specs.timestep(
+        {
+            "RGB": specs.OBSERVATION["RGB"],
+            "READY_TO_SHOOT": specs.OBSERVATION["READY_TO_SHOOT"],
+            # Debug only (do not use the following observations in policies).
+            "WORLD.RGB": specs.rgb(168, 168),
+        }
+    )
 
-  # The roles assigned to each player.
-  config.default_player_roles = ("default",) * 9
+    # The roles assigned to each player.
+    config.default_player_roles = ("default",) * 9
 
-  return config
+    return config

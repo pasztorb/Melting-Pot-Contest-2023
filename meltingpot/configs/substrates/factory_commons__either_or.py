@@ -40,32 +40,44 @@ _______________________
 """
 
 blue_cube_live = {
-    "type": "all", "list": ["tiled_floor", "blue_cube_wait", "blue_cube_live"]}
-blue_cube_wait = {
-    "type": "all", "list": ["tiled_floor", "blue_cube_wait"]}
+    "type": "all",
+    "list": ["tiled_floor", "blue_cube_wait", "blue_cube_live"],
+}
+blue_cube_wait = {"type": "all", "list": ["tiled_floor", "blue_cube_wait"]}
 
 # `prefab` determines which prefab game object to use for each `char` in the
 # ascii map.
 CHAR_PREFAB_MAP = {
     " ": {"type": "all", "list": ["tiled_floor", "apple", "spawn_point"]},
     # Graspable objects.
-    "c": map_helpers.a_or_b_with_odds(blue_cube_wait,
-                                      blue_cube_live, odds=(1, 1)),
+    "c": map_helpers.a_or_b_with_odds(blue_cube_wait, blue_cube_live, odds=(1, 1)),
     "C": blue_cube_live,  # This blue cube will always be present.
     # New dynamic components.
-    "l": {"type": "all", "list": ["tiled_floor", "hopper_body",
-                                  "hopper_indicator_blue_cube"]},
+    "l": {
+        "type": "all",
+        "list": ["tiled_floor", "hopper_body", "hopper_indicator_blue_cube"],
+    },
     "O": {"type": "all", "list": ["tiled_floor", "hopper_mouth"]},
-    "D": {"type": "all", "list": ["tiled_floor", "dispenser_body",
-                                  "dispenser_indicator_apple"]},
-    "t": {"type": "all", "list": ["tiled_floor", "dispenser_body",
-                                  "dispenser_indicator_two_apples"]},
-    "s": {"type": "all", "list": ["tiled_floor", "dispenser_body",
-                                  "dispenser_indicator_cube_apple"]},
-    "#": {"type": "all", "list": ["tiled_floor", "dispenser_belt",
-                                  "apple_dispensing_animation"]},
-    "j": {"type": "all", "list": ["tiled_floor", "dispenser_belt",
-                                  "cube_apple_dispensing_animation"]},
+    "D": {
+        "type": "all",
+        "list": ["tiled_floor", "dispenser_body", "dispenser_indicator_apple"],
+    },
+    "t": {
+        "type": "all",
+        "list": ["tiled_floor", "dispenser_body", "dispenser_indicator_two_apples"],
+    },
+    "s": {
+        "type": "all",
+        "list": ["tiled_floor", "dispenser_body", "dispenser_indicator_cube_apple"],
+    },
+    "#": {
+        "type": "all",
+        "list": ["tiled_floor", "dispenser_belt", "apple_dispensing_animation"],
+    },
+    "j": {
+        "type": "all",
+        "list": ["tiled_floor", "dispenser_belt", "cube_apple_dispensing_animation"],
+    },
     "z": {"type": "all", "list": ["tiled_floor", "floor_marking_top"]},
     "x": {"type": "all", "list": ["tiled_floor", "floor_marking_bottom"]},
     # Static components.
@@ -81,25 +93,27 @@ CHAR_PREFAB_MAP = {
 
 
 def get_config():
-  """Default configuration."""
-  config = base_config.get_config()
-  # Specify a recommended number of players to particate in each episode.
-  config.recommended_num_players = 3
-  # Override the map layout settings.
-  config.layout = config_dict.ConfigDict()
-  config.layout.ascii_map = ASCII_MAP
-  config.layout.char_prefab_map = CHAR_PREFAB_MAP
+    """Default configuration."""
+    config = base_config.get_config()
+    # Specify a recommended number of players to particate in each episode.
+    config.recommended_num_players = 3
+    # Override the map layout settings.
+    config.layout = config_dict.ConfigDict()
+    config.layout.ascii_map = ASCII_MAP
+    config.layout.char_prefab_map = CHAR_PREFAB_MAP
 
-  # The roles assigned to each player.
-  config.valid_roles = frozenset({"default"})
-  config.default_player_roles = ("default",) * 3
+    # The roles assigned to each player.
+    config.valid_roles = frozenset({"default"})
+    config.default_player_roles = ("default",) * 3
 
-  # The specs of the environment (from a single-agent perspective).
-  config.timestep_spec = specs.timestep({
-      "RGB": specs.OBSERVATION["RGB"],
-      "READY_TO_SHOOT": specs.OBSERVATION["READY_TO_SHOOT"],
-      "STAMINA": specs.float64(),
-      # Debug only.
-      "WORLD.RGB": specs.rgb(128, 184),
-  })
-  return config
+    # The specs of the environment (from a single-agent perspective).
+    config.timestep_spec = specs.timestep(
+        {
+            "RGB": specs.OBSERVATION["RGB"],
+            "READY_TO_SHOOT": specs.OBSERVATION["READY_TO_SHOOT"],
+            "STAMINA": specs.float64(),
+            # Debug only.
+            "WORLD.RGB": specs.rgb(128, 184),
+        }
+    )
+    return config
